@@ -13,6 +13,7 @@ gem "active_model_serializers"
 gem "devise"
 gem "devise-jwt"
 gem "pundit"
+gem "ransack"
 
 group :development do
   gem "rubocop", require: false

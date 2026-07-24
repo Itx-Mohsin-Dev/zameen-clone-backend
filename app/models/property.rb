@@ -18,4 +18,22 @@ class Property < ApplicationRecord
   validates :property_type, presence: true
   validates :purpose, presence: true
   validates :status, presence: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[
+      purpose
+      city
+      location
+      property_type
+      price
+      area
+      bedrooms
+      bathrooms
+      title
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
 end

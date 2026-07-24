@@ -3,8 +3,26 @@ class PropertiesController < ApplicationController
   before_action :set_property, only: [ :show, :update, :destroy ]
 
   def index
+    # converting "rent" into 1 to apply search for enums
+    if params.dig(:q, :purpose_eq).present?
+      purpose = Property.purposes[params[:q][:purpose_eq]]
+      return render_response([]) if purpose.nil?
+
+      params[:q][:purpose_eq] = purpose
+    end
+
+
+    if params.dig(:q, :property_type_eq).present?
+      property_type = Property.property_types[params[:q][:property_type_eq]]
+      return render_response([]) if property_type.nil?
+
+      params[:q][:property_type_eq] = property_type
+    end
+
     # @properties = Property.all
-    @properties = policy_scope(Property)
+    @q = policy_scope(Property).ransack(params[:q])
+    @properties = @q.result
+
     render_response(@properties)
   end
 
