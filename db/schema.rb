@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_182728) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_132003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_182728) do
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
+  create_table "property_images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "image_url"
+    t.bigint "property_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id"], name: "index_property_images_on_property_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -82,4 +90,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_182728) do
   add_foreign_key "inquiries", "properties"
   add_foreign_key "inquiries", "users"
   add_foreign_key "properties", "users"
+  add_foreign_key "property_images", "properties"
 end

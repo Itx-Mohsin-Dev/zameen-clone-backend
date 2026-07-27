@@ -14,7 +14,8 @@ gem "devise"
 gem "devise-jwt"
 gem "pundit"
 gem "ransack"
-
+gem "cloudinary"
+gem "dotenv-rails", groups: [ :development, :test ]
 group :development do
   gem "rubocop", require: false
   gem "rubocop-rails", require: false
