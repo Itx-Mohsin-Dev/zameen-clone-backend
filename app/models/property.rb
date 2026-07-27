@@ -4,6 +4,7 @@ class Property < ApplicationRecord
   has_many :inquired_users, through: :inquiries, source: :user
   has_many :favorites, dependent: :destroy
   has_many :favorited_users, through: :favorites, source: :user
+  has_many :property_images, dependent: :destroy
 
   enum :property_type, { house: 0, apartment: 1, plot: 2, commercial: 3 }
   enum :purpose, { sale: 0, rent: 1 }

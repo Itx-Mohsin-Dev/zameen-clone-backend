@@ -7,12 +7,18 @@ class PropertiesController < ApplicationController
   end
 
   def create
-    # @property = Property.new(property_params)
     @property = current_user.properties.build(property_params)
 
     authorize @property
 
-    if @property.save
+
+    pp params[:images]
+    puts params[:images].class
+
+    @property = PropertyCreationService.new(@property, params[:images]).call
+
+
+    if @property.persisted?
       render json: @property, status: :created
     else
       render_validation_error(@property)
@@ -42,8 +48,6 @@ class PropertiesController < ApplicationController
       head :no_content
     end
   end
-
-
 
   private
 
