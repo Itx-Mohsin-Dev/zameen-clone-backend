@@ -5,7 +5,7 @@ class PropertySearchService
   end
 
   def call
-    return [] unless convert_enum_params
+    return empty_result unless convert_enum_params
     paginate(search_properties)
   end
 
@@ -26,6 +26,8 @@ class PropertySearchService
 
       @params[:q][:property_type_eq] = property_type
     end
+
+    true
   end
 
   def search_properties
@@ -49,6 +51,18 @@ class PropertySearchService
         per_page: per_page,
         total_records: total_records,
         total_pages: total_pages
+      }
+    }
+  end
+
+  def empty_result
+    {
+      properties: [],
+      meta: {
+        current_page: 1,
+        per_page: 10,
+        total_records: 0,
+        total_pages: 0
       }
     }
   end
