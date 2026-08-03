@@ -31,7 +31,7 @@ class PropertySearchService
   end
 
   def search_properties
-    q = Pundit.policy_scope!(@user, Property).ransack(@params[:q])
+    q = Pundit.policy_scope!(@user, Property).order(created_at: :desc).ransack(@params[:q])
     q.result
   end
 

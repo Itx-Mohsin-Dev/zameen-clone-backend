@@ -18,6 +18,6 @@ class ApplicationController < ActionController::API
   end
 
   def render_response(record)
-    render json: record, status: :ok
+    render json: record, scope: current_user, status: :ok
   end
 end

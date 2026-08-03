@@ -1,9 +1,23 @@
 class PropertiesController < ApplicationController
   before_action :authenticate_user!, except: [ :index, :show ]
-  before_action :set_property, only: [ :show, :update, :destroy ]
+  before_action :set_property, only: [ :show, :update, :destroy, :approve, :reject ]
 
   def index
-    render json: PropertySearchService.new(params, current_user).call
+    result = PropertySearchService.new(params, current_user).call
+    render json: {
+      properties: ActiveModelSerializers::SerializableResource.new(
+        result[:properties],
+        each_serializer: PropertySerializer
+      ),
+      meta: result[:meta]
+    }
+  end
+
+  def my_listings
+    properties = current_user.properties.order(created_at: :desc)
+
+    render json: properties,
+           each_serializer: PropertySerializer
   end
 
   def create
@@ -11,12 +25,7 @@ class PropertiesController < ApplicationController
 
     authorize @property
 
-
-    pp params[:images]
-    puts params[:images].class
-
     @property = PropertyCreationService.new(@property, params[:images]).call
-
 
     if @property.persisted?
       render json: @property, status: :created
@@ -44,15 +53,40 @@ class PropertiesController < ApplicationController
   def destroy
     authorize @property
 
-    if @property.destroy()
+    if @property.destroy
       head :no_content
+    end
+  end
+
+  def pending
+    properties = policy_scope(Property).where(status: :pending)
+    render_response(properties)
+  end
+
+  def approve
+    authorize @property
+
+    if @property.update(status: :approved)
+      render_response(@property)
+    else
+      render_validation_error(@property)
+    end
+  end
+
+  def reject
+    authorize @property
+
+    if @property.update(status: :rejected)
+      render_response(@property)
+    else
+      render_validation_error(@property)
     end
   end
 
   private
 
   def property_params
-    params.require(:property).permit(:title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose, :status)
+    params.require(:property).permit(:title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose)
   end
 
   def set_property

@@ -16,6 +16,7 @@ gem "pundit"
 gem "ransack"
 gem "cloudinary"
 gem "dotenv-rails", groups: [ :development, :test ]
+gem "rack-cors"
 group :development do
   gem "rubocop", require: false
   gem "rubocop-rails", require: false
