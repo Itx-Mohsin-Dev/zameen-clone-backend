@@ -15,12 +15,21 @@ class PropertyPolicy < ApplicationPolicy
     record.approved? || record.user == user || user&.admin?
   end
 
+  def approve?
+    user.admin?
+  end
+
+  def reject?
+    user.admin?
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
+      return scope.where(status: "approved") unless user
       if user.admin?
         scope.all
       elsif user.seller?
-        scope.where(user: user)
+        scope.where(status: "approved")
       else
         scope.where(status: "approved")
       end
