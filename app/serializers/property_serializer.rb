@@ -1,5 +1,5 @@
 class PropertySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose, :user_id, :is_favorited, :favorite_id
+  attributes :id, :title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose, :user_id, :is_favorited, :favorite_id, :marla_type, :latitude, :longitude
   belongs_to :user
   has_many :property_images
 

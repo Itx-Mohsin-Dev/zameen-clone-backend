@@ -21,6 +21,11 @@ class PropertiesController < ApplicationController
   end
 
   def create
+    if params[:images].blank?
+      render json: { error: "At least one property image is required" }, status: :unprocessable_entity
+      return
+    end
+
     @property = current_user.properties.build(property_params)
 
     authorize @property
@@ -44,6 +49,18 @@ class PropertiesController < ApplicationController
     authorize @property
 
     if @property.update(property_params)
+      if params[:images].present?
+        @property.property_images.destroy_all
+
+        params[:images].each do |image|
+          result = Cloudinary::Uploader.upload(image.path)
+          
+          @property.property_images.create!(
+            image_url: result["secure_url"]
+          )
+        end
+      end
+
       render_response(@property)
     else
       render_validation_error(@property)
@@ -56,6 +73,12 @@ class PropertiesController < ApplicationController
     if @property.destroy
       head :no_content
     end
+  end
+
+  def bulk_destroy
+    properties = current_user.properties.where(id: params[:ids])
+    properties.destroy_all
+    head :no_content
   end
 
   def pending
@@ -86,7 +109,7 @@ class PropertiesController < ApplicationController
   private
 
   def property_params
-    params.require(:property).permit(:title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose)
+    params.require(:property).permit(:title, :description, :location, :city, :price, :area, :property_type, :bathrooms, :bedrooms, :purpose, :marla_type, :latitude, :longitude)
   end
 
   def set_property
